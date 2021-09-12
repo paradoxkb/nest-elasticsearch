@@ -10,6 +10,7 @@ exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const elasticsearch_1 = require("@nestjs/elasticsearch");
+const elasticSeachUrl = 'http://1922-78-26-206-247.ngrok.io';
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
@@ -19,7 +20,7 @@ UsersModule = __decorate([
         imports: [
             elasticsearch_1.ElasticsearchModule.registerAsync({
                 useFactory: () => ({
-                    node: 'http://localhost:9200'
+                    node: elasticSeachUrl
                 })
             })
         ]
