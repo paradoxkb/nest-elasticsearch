@@ -6,22 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersModule = void 0;
+exports.RabbitMQMessageModule = void 0;
+const nestjs_rabbitmq_1 = require("@golevelup/nestjs-rabbitmq");
 const common_1 = require("@nestjs/common");
-const users_service_1 = require("./users.service");
-const rabbitmq_module_1 = require("../providers/rabbitmq.module");
-const elasticsearch_module_1 = require("../providers/elasticsearch.module");
-let UsersModule = class UsersModule {
+const rabbitmq_1 = require("../configs/rabbitmq");
+let RabbitMQMessageModule = class RabbitMQMessageModule {
 };
-UsersModule = __decorate([
+RabbitMQMessageModule = __decorate([
     (0, common_1.Module)({
-        providers: [users_service_1.UsersService],
-        exports: [users_service_1.UsersService],
         imports: [
-            rabbitmq_module_1.RabbitMQMessageModule,
-            elasticsearch_module_1.ElasticsearchLocalModule
-        ]
+            nestjs_rabbitmq_1.RabbitMQModule.forRoot(nestjs_rabbitmq_1.RabbitMQModule, rabbitmq_1.NRabbitMqConfig.mainConfig)
+        ],
+        providers: [],
+        exports: [nestjs_rabbitmq_1.RabbitMQModule]
     })
-], UsersModule);
-exports.UsersModule = UsersModule;
-//# sourceMappingURL=users.module.js.map
+], RabbitMQMessageModule);
+exports.RabbitMQMessageModule = RabbitMQMessageModule;
+//# sourceMappingURL=rabbitmq.module.js.map

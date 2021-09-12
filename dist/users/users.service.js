@@ -12,9 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const elasticsearch_1 = require("@nestjs/elasticsearch");
+const nestjs_rabbitmq_1 = require("@golevelup/nestjs-rabbitmq");
+const rabbitmq_1 = require("../configs/rabbitmq");
 let UsersService = class UsersService {
-    constructor(elasticsearchService) {
+    constructor(elasticsearchService, amqpConnection) {
         this.elasticsearchService = elasticsearchService;
+        this.amqpConnection = amqpConnection;
         this.elasticIndex = 'users';
     }
     async create(user) {
@@ -22,6 +25,7 @@ let UsersService = class UsersService {
             index: this.elasticIndex,
             body: user
         });
+        await this.publishUserEvent('creating users');
         return this.findById(result.body._id);
     }
     async findById(id) {
@@ -33,6 +37,7 @@ let UsersService = class UsersService {
     }
     async find(filter) {
         const params = { index: this.elasticIndex };
+        await this.publishUserEvent('getting users');
         if (Object.keys(filter).length) {
             Object.assign(params, {
                 body: {
@@ -54,6 +59,7 @@ let UsersService = class UsersService {
                 doc: data
             }
         });
+        await this.publishUserEvent('updating users');
         return this.findById(id);
     }
     async delete(id) {
@@ -61,12 +67,27 @@ let UsersService = class UsersService {
             id,
             index: this.elasticIndex
         });
+        await this.publishUserEvent('deleting users');
         return 'ok';
     }
+    async publishUserEvent(msg) {
+        await this.amqpConnection.publish(rabbitmq_1.NRabbitMqConfig.usersBus.exchange, rabbitmq_1.NRabbitMqConfig.usersBus.routingKey, msg);
+    }
+    async pubSubHandler(msg) {
+        console.log(`Received message from exchange: ${msg}`);
+        return false;
+    }
 };
+__decorate([
+    (0, nestjs_rabbitmq_1.RabbitSubscribe)(rabbitmq_1.NRabbitMqConfig.usersBus),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersService.prototype, "pubSubHandler", null);
 UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [elasticsearch_1.ElasticsearchService])
+    __metadata("design:paramtypes", [elasticsearch_1.ElasticsearchService,
+        nestjs_rabbitmq_1.AmqpConnection])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

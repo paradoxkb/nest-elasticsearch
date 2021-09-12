@@ -1,10 +1,13 @@
 import { join } from 'path';
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices'
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppService } from './app.service';
 import { UsersResolver } from './users/users.resolver';
 import { UsersModule } from './users/users.module';
+import { RabbitMQMessageModule } from './providers/rabbitmq.module';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ElasticsearchLocalModule } from './providers/elasticsearch.module';
 
 @Module({
 	imports: [
@@ -19,24 +22,16 @@ import { UsersModule } from './users/users.module';
 			context: ({ req }) => ({ req })
 		}),
 		UsersModule,
-		// ClientsModule.register([
-		// 	{
-		// 		name: 'ARCHI_SERVICE',
-		// 		transport: Transport.RMQ,
-		// 		options: {
-		// 			urls: ['amqp://localhost:5672'],
-		// 			queue: 'users_queue',
-		// 			queueOptions: {
-		// 				durable: false
-		// 			},
-		// 		},
-		// 	},
-		// ]),
+		ElasticsearchLocalModule,
+		RabbitMQMessageModule,
+		ClientsModule.register([
+			{
+				name: 'Nest_App',
+				transport: Transport.TCP,
+				options: { port: 5672 },
+			},
+		])
 	],
-	providers: [AppService, UsersResolver],
+	providers: [AppService, UsersResolver, AmqpConnection]
 })
-export class AppModule {
-	// configure(consumer: MiddlewareConsumer){
-	// 	consumer.apply(AuthMiddleware).forRoutes('*')
-	// }
-}
+export class AppModule { }

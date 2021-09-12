@@ -13,6 +13,10 @@ const graphql_1 = require("@nestjs/graphql");
 const app_service_1 = require("./app.service");
 const users_resolver_1 = require("./users/users.resolver");
 const users_module_1 = require("./users/users.module");
+const rabbitmq_module_1 = require("./providers/rabbitmq.module");
+const nestjs_rabbitmq_1 = require("@golevelup/nestjs-rabbitmq");
+const microservices_1 = require("@nestjs/microservices");
+const elasticsearch_module_1 = require("./providers/elasticsearch.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -24,11 +28,22 @@ AppModule = __decorate([
                     path: (0, path_1.join)(process.cwd(), 'src/graphql.ts'),
                     outputAs: 'class'
                 },
+                introspection: true,
+                playground: true,
                 context: ({ req }) => ({ req })
             }),
             users_module_1.UsersModule,
+            elasticsearch_module_1.ElasticsearchLocalModule,
+            rabbitmq_module_1.RabbitMQMessageModule,
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'Nest_App',
+                    transport: microservices_1.Transport.TCP,
+                    options: { port: 5672 },
+                },
+            ])
         ],
-        providers: [app_service_1.AppService, users_resolver_1.UsersResolver],
+        providers: [app_service_1.AppService, users_resolver_1.UsersResolver, nestjs_rabbitmq_1.AmqpConnection]
     })
 ], AppModule);
 exports.AppModule = AppModule;

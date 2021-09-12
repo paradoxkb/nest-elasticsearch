@@ -6,22 +6,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersModule = void 0;
+exports.ElasticsearchLocalModule = void 0;
 const common_1 = require("@nestjs/common");
-const users_service_1 = require("./users.service");
-const rabbitmq_module_1 = require("../providers/rabbitmq.module");
-const elasticsearch_module_1 = require("../providers/elasticsearch.module");
-let UsersModule = class UsersModule {
+const elasticsearch_1 = require("@nestjs/elasticsearch");
+const configs_1 = require("../configs");
+let ElasticsearchLocalModule = class ElasticsearchLocalModule {
 };
-UsersModule = __decorate([
+ElasticsearchLocalModule = __decorate([
     (0, common_1.Module)({
-        providers: [users_service_1.UsersService],
-        exports: [users_service_1.UsersService],
         imports: [
-            rabbitmq_module_1.RabbitMQMessageModule,
-            elasticsearch_module_1.ElasticsearchLocalModule
-        ]
+            elasticsearch_1.ElasticsearchModule.register({
+                node: configs_1.default.elasticSearchUrl
+            })
+        ],
+        exports: [elasticsearch_1.ElasticsearchModule]
     })
-], UsersModule);
-exports.UsersModule = UsersModule;
-//# sourceMappingURL=users.module.js.map
+], ElasticsearchLocalModule);
+exports.ElasticsearchLocalModule = ElasticsearchLocalModule;
+//# sourceMappingURL=elasticsearch.module.js.map

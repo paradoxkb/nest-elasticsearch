@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Context, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { AppService } from '../app.service';
 import { UsersService } from './users.service';
 import { User } from '../graphql';
@@ -8,8 +8,8 @@ import { UserArgs } from './args';
 export class UsersResolver {
 	constructor(
 		private readonly appService: AppService,
-		private service: UsersService
-	) {}
+		private service: UsersService,
+	) { }
 
 	@Query()
 	async getUsers(@Args(new UserArgs())filter: Partial<User>): Promise<User[]> {
