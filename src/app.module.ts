@@ -14,6 +14,8 @@ import { UsersModule } from './users/users.module';
 				path: join(process.cwd(), 'src/graphql.ts'),
 				outputAs: 'class'
 			},
+			introspection: true,
+			playground: true,
 			context: ({ req }) => ({ req })
 		}),
 		UsersModule,
